@@ -25,6 +25,7 @@ import SendIcon from '@mui/icons-material/Send';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
+import Canvas from './canvas';
 
 import CodeMirror from '@uiw/react-codemirror';
 import { javascript } from '@codemirror/lang-javascript';
@@ -82,7 +83,7 @@ const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
   ...theme.typography.body2,
   padding: theme.spacing(1),
-  textAlign: 'center',
+  //textAlign: 'center',
   color: theme.palette.text.secondary,
 }));
 
@@ -94,6 +95,14 @@ export default function PersistentDrawerLeft() {
     console.log('val:', val);
     setValue(val);
   }, []);
+
+  const draw = (ctx, frameCount) => {
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
+    ctx.fillStyle = '#000000'
+    ctx.beginPath()
+    ctx.arc(50, 100, 20*Math.sin(frameCount*0.05)**2, 0, 2*Math.PI)
+    ctx.fill()
+  }
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -120,8 +129,8 @@ export default function PersistentDrawerLeft() {
           <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
             Fundamentals of Programming
           </Typography>
-          <Button variant="contained" endIcon={<SendIcon />}>
-          Send
+          <Button variant="contained" endIcon={<PlayCircleIcon />}>
+          Run Code
         </Button>
         </Toolbar>
       </AppBar>
@@ -182,10 +191,12 @@ export default function PersistentDrawerLeft() {
             <Item>
               <Stack spacing={2}>
                 <Item>
-                  <Typography paragraph>Hello</Typography>                
+                  <Paper height="50vh">
+                    <Canvas draw={draw}/>
+                  </Paper>
                 </Item>
                 <Item>
-                <Typography paragraph>World</Typography>                
+                <Typography paragraph>Hello World</Typography>                
                 </Item>
               </Stack>
             </Item>
