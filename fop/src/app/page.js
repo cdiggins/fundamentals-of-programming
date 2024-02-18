@@ -90,10 +90,11 @@ const Item = styled(Paper)(({ theme }) => ({
 export default function PersistentDrawerLeft() {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
+  const [code, setCode] = React.useState("// JavaScript code here");
 
-  const onChange = React.useCallback((val, viewUpdate) => {
-    console.log('val:', val);
-    setValue(val);
+  const onChange = React.useCallback((code, viewUpdate) => {
+    //console.log('val:', val);
+    setCode(code);
   }, []);
 
   const draw = (ctx, frameCount) => {
@@ -102,7 +103,11 @@ export default function PersistentDrawerLeft() {
     ctx.beginPath()
     ctx.arc(50, 100, 20*Math.sin(frameCount*0.05)**2, 0, 2*Math.PI)
     ctx.fill()
-  }
+  };
+
+  const runCode = () => {
+    alert("Running code: " + code);
+  };
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -129,7 +134,7 @@ export default function PersistentDrawerLeft() {
           <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
             Fundamentals of Programming
           </Typography>
-          <Button variant="contained" endIcon={<PlayCircleIcon />}>
+          <Button variant="contained" endIcon={<PlayCircleIcon />} onClick={runCode}>
           Run Code
         </Button>
         </Toolbar>
@@ -184,7 +189,7 @@ export default function PersistentDrawerLeft() {
         <Grid container spacing={2}>
           <Grid item xs={8}>
             <Item>
-            <CodeMirror height="80vh" extensions={[javascript({ jsx: true })]} onChange={onChange} />
+            <CodeMirror value={code} height="80vh" extensions={[javascript({ jsx: true })]} onChange={onChange} />
             </Item>
           </Grid>
           <Grid item xs={4}>
