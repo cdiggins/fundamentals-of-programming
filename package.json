@@ -5,5 +5,8 @@
     "@fontsource/roboto": "^5.0.8",
     "@mui/icons-material": "^5.15.10",
     "@mui/material": "^5.15.10"
+  },
+  "devDependencies": {
+    "babel-plugin-preval": "^5.1.0"
   }
 }

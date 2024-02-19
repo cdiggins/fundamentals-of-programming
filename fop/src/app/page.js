@@ -31,8 +31,10 @@ import CodeMirror from '@uiw/react-codemirror';
 import { javascript } from '@codemirror/lang-javascript';
 import { historyField } from '@codemirror/commands';
 
-const drawerWidth = 240;
+import examples from './examples.js';
+import preamble from './preamble.js';
 
+const drawerWidth = 240;
 
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
   ({ theme, open }) => ({
@@ -87,26 +89,40 @@ const Item = styled(Paper)(({ theme }) => ({
   color: theme.palette.text.secondary,
 }));
 
+const getInitialCode = () => {
+  // https://nextjs.org/docs/pages/building-your-application/data-fetching/get-static-props
+  return examples.drawHouse;
+}
+
 export default function PersistentDrawerLeft() {
   const theme = useTheme();
+  const noError = "No Errors!";
   const [open, setOpen] = React.useState(false);
-  const [code, setCode] = React.useState("// JavaScript code here");
+
+
+  const [code, setCode] = React.useState(getInitialCode);
+  const [error, setError] = React.useState(noError);
 
   const onChange = React.useCallback((code, viewUpdate) => {
     //console.log('val:', val);
     setCode(code);
   }, []);
 
-  const draw = (ctx, frameCount) => {
-    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
-    ctx.fillStyle = '#000000'
-    ctx.beginPath()
-    ctx.arc(50, 100, 20*Math.sin(frameCount*0.05)**2, 0, 2*Math.PI)
-    ctx.fill()
+  const draw = (ctx) => {
+    // TEMP: does nothing.
+    // Previously this was passed to the Canvas component to do the drawing.
   };
 
   const runCode = () => {
-    alert("Running code: " + code);
+    //alert("Running code: " + code);
+    try {
+      setError(noError);
+      eval(preamble + '\n' + code);
+    }
+    catch (e)
+    {
+      setError(e.toString());
+    }
   };
 
   const handleDrawerOpen = () => {
@@ -196,12 +212,14 @@ export default function PersistentDrawerLeft() {
             <Item>
               <Stack spacing={2}>
                 <Item>
-                  <Paper height="50vh">
-                    <Canvas draw={draw}/>
+                  <Paper>
+                    <Canvas height={"400px"}/>
                   </Paper>
                 </Item>
                 <Item>
-                <Typography paragraph>Hello World</Typography>                
+                <Typography paragraph>
+                  {error}
+                  </Typography>                
                 </Item>
               </Stack>
             </Item>
