@@ -2,10 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-canvas {
-
-}
-
 @layer utilities {
   .text-balance {
     text-wrap: balance;

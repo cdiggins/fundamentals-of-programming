@@ -15,13 +15,36 @@ function getDrawingContext()
     return canvases[0].getContext('2d');
 }
 
-function clearCanvas()
-{
-    const ctx = getDrawingContext();
-    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)    
-};
+// The global variables
+const ctx = getDrawingContext();
+ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+ctx.font = "14px serif";
+ctx.strokeStyle = "blue";
+ctx.textBaseline = "top";
+let textCursor = { x:0, y:0 };
+let alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+let textMetrics = ctx.measureText(alphabet);
+let lineHeight = textMetrics.fontBoundingBoxAscent + textMetrics.fontBoundingBoxDescent;
 
-clearCanvas();
+// Functions which manipulate the global variables
+function write(text)
+{
+    console.log(textCursor);
+    if (text != undefined)
+    {        
+        ctx.fillText(text, textCursor.x, textCursor.y);
+        textCursor.x += ctx.measureText(text).width;
+    }
+    console.log(textCursor);
+}
+
+function writeLine(text)
+{
+    write(text);
+    textCursor.x = 0;
+    textCursor.y += lineHeight;
+    console.log(textCursor);
+}
 `;
 
 export default preamble;

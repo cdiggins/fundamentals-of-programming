@@ -18,6 +18,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
+import ListSubheader from '@mui/material/ListSubheader';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
 import MailIcon from '@mui/icons-material/Mail';
 import PlayCircleIcon from '@mui/icons-material/PlayCircle';
@@ -30,11 +31,13 @@ import Canvas from './canvas';
 import CodeMirror from '@uiw/react-codemirror';
 import { javascript } from '@codemirror/lang-javascript';
 import { historyField } from '@codemirror/commands';
+import { indentUnit } from '@codemirror/language';
 
 import examples from './examples.js';
 import preamble from './preamble.js';
 
 const drawerWidth = 240;
+const exampleNames = Object.keys(examples);
 
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
   ({ theme, open }) => ({
@@ -97,7 +100,7 @@ const getInitialCode = () => {
 export default function PersistentDrawerLeft() {
   const theme = useTheme();
   const noError = "No Errors!";
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(true);
 
 
   const [code, setCode] = React.useState(getInitialCode);
@@ -107,6 +110,10 @@ export default function PersistentDrawerLeft() {
     //console.log('val:', val);
     setCode(code);
   }, []);
+
+  const changeExample = (example) => {
+    setCode(examples[example]);
+  };
 
   const draw = (ctx) => {
     // TEMP: does nothing.
@@ -173,28 +180,15 @@ export default function PersistentDrawerLeft() {
             {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
           </IconButton>
         </DrawerHeader>
-        <Divider />
         <List>
-          {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
+          <ListSubheader>{"Examples"}</ListSubheader>
+          {exampleNames.map((text) => (
             <ListItem key={text} disablePadding>
-              <ListItemButton>
-                <ListItemIcon>
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                </ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
-        <Divider />
-        <List>
-          {['All mail', 'Trash', 'Spam'].map((text, index) => (
-            <ListItem key={text} disablePadding>
-              <ListItemButton>
-                <ListItemIcon>
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                </ListItemIcon>
-                <ListItemText primary={text} />
+              <ListItemButton
+                onClick={(event) => {changeExample(text); }}>
+                <ListItemText primary={text}
+                      primaryTypographyProps={{ fontSize: 14, fontWeight: 'medium' }}
+                      />
               </ListItemButton>
             </ListItem>
           ))}
@@ -205,7 +199,9 @@ export default function PersistentDrawerLeft() {
         <Grid container spacing={2}>
           <Grid item xs={8}>
             <Item>
-            <CodeMirror value={code} height="80vh" extensions={[javascript({ jsx: true })]} onChange={onChange} />
+            <CodeMirror 
+              value={code} height="80vh" 
+              extensions={[javascript({ jsx: true }), indentUnit.of("    ")]} onChange={onChange} />
             </Item>
           </Grid>
           <Grid item xs={4}>
@@ -213,7 +209,7 @@ export default function PersistentDrawerLeft() {
               <Stack spacing={2}>
                 <Item>
                   <Paper>
-                    <Canvas height={"400px"}/>
+                    <Canvas width={"1000"} height={"500px"}/>
                   </Paper>
                 </Item>
                 <Item>
