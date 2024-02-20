@@ -1,12 +1,28 @@
 {
+  "name": "material-ui-vite",
+  "version": "5.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "serve": "vite preview",
+    "xcopy": "xcopy .\\dist .\\docs /s /e /y"
+  },
   "dependencies": {
-    "@emotion/react": "^11.11.3",
-    "@emotion/styled": "^11.11.0",
+    "@codemirror/commands": "^6.3.3",
+    "@codemirror/lang-javascript": "^6.2.1",
+    "@codemirror/language": "^6.10.1",
+    "@emotion/react": "latest",
+    "@emotion/styled": "latest",
     "@fontsource/roboto": "^5.0.8",
     "@mui/icons-material": "^5.15.10",
-    "@mui/material": "^5.15.10"
+    "@mui/material": "latest",
+    "@uiw/react-codemirror": "^4.21.22",
+    "react": "latest",
+    "react-dom": "latest"
   },
   "devDependencies": {
-    "babel-plugin-preval": "^5.1.0"
+    "@vitejs/plugin-react": "latest",
+    "vite": "latest"
   }
 }

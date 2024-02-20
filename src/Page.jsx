@@ -1,6 +1,8 @@
+'use client'
 import * as React from 'react';
 import { styled, useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import Drawer from '@mui/material/Drawer';
 import CssBaseline from '@mui/material/CssBaseline';
 import MuiAppBar from '@mui/material/AppBar';
@@ -16,10 +18,25 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
+import ListSubheader from '@mui/material/ListSubheader'; 
 import InboxIcon from '@mui/icons-material/MoveToInbox';
 import MailIcon from '@mui/icons-material/Mail';
+import PlayCircleIcon from '@mui/icons-material/PlayCircle';
+import SendIcon from '@mui/icons-material/Send';
+import Grid from '@mui/material/Grid';
+import Paper from '@mui/material/Paper';
+import Stack from '@mui/material/Stack';
+
+import CodeMirror from '@uiw/react-codemirror';
+import { javascript } from '@codemirror/lang-javascript';
+import { historyField } from '@codemirror/commands';
+import { indentUnit } from '@codemirror/language';
+
+import examples from './examples.js';
+import preamble from './preamble.js';
 
 const drawerWidth = 240;
+const exampleNames = Object.keys(examples);
 
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
   ({ theme, open }) => ({
@@ -39,6 +56,12 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
     }),
   }),
 );
+
+const Canvas = props => {  
+  const { ...rest } = props
+  const canvasRef = React.useRef(null)  
+  return <canvas id="drawingCanvas" ref={canvasRef} {...rest}/>
+}
 
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== 'open',
@@ -66,9 +89,53 @@ const DrawerHeader = styled('div')(({ theme }) => ({
   justifyContent: 'flex-end',
 }));
 
+const Item = styled(Paper)(({ theme }) => ({
+  backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
+  ...theme.typography.body2,
+  padding: theme.spacing(1),
+  //textAlign: 'center',
+  color: theme.palette.text.secondary,
+}));
+
+const getInitialCode = () => {
+  // https://nextjs.org/docs/pages/building-your-application/data-fetching/get-static-props
+  return examples.drawHouse;
+}
+
 export default function PersistentDrawerLeft() {
   const theme = useTheme();
-  const [open, setOpen] = React.useState(false);
+  const noError = "No Errors!";
+  const [open, setOpen] = React.useState(true);
+
+
+  const [code, setCode] = React.useState(getInitialCode);
+  const [error, setError] = React.useState(noError);
+
+  const onChange = React.useCallback((code, viewUpdate) => {
+    //console.log('val:', val);
+    setCode(code);
+  }, []);
+
+  const changeExample = (example) => {
+    setCode(examples[example]);
+  };
+
+  const draw = (ctx) => {
+    // TEMP: does nothing.
+    // Previously this was passed to the Canvas component to do the drawing.
+  };
+
+  const runCode = () => {
+    //alert("Running code: " + code);
+    try {
+      setError(noError);
+      eval(preamble + '\n' + code);
+    }
+    catch (e)
+    {
+      setError(e.toString());
+    }
+  };
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -92,9 +159,12 @@ export default function PersistentDrawerLeft() {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" noWrap component="div">
-            Persistent drawer
+          <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
+            Fundamentals of Programming
           </Typography>
+          <Button variant="contained" endIcon={<PlayCircleIcon />} onClick={runCode}>
+          Run Code
+        </Button>
         </Toolbar>
       </AppBar>
       <Drawer
@@ -115,28 +185,15 @@ export default function PersistentDrawerLeft() {
             {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
           </IconButton>
         </DrawerHeader>
-        <Divider />
         <List>
-          {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
+          <ListSubheader>{"Examples"}</ListSubheader>
+          {exampleNames.map((text) => (
             <ListItem key={text} disablePadding>
-              <ListItemButton>
-                <ListItemIcon>
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                </ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
-        <Divider />
-        <List>
-          {['All mail', 'Trash', 'Spam'].map((text, index) => (
-            <ListItem key={text} disablePadding>
-              <ListItemButton>
-                <ListItemIcon>
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                </ListItemIcon>
-                <ListItemText primary={text} />
+              <ListItemButton
+                onClick={(event) => {changeExample(text); }}>
+                <ListItemText primary={text}
+                      primaryTypographyProps={{ fontSize: 14, fontWeight: 'medium' }}
+                      />
               </ListItemButton>
             </ListItem>
           ))}
@@ -144,33 +201,31 @@ export default function PersistentDrawerLeft() {
       </Drawer>
       <Main open={open}>
         <DrawerHeader />
-        <Typography paragraph>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-          tempor incididunt ut labore et dolore magna aliqua. Rhoncus dolor purus non
-          enim praesent elementum facilisis leo vel. Risus at ultrices mi tempus
-          imperdiet. Semper risus in hendrerit gravida rutrum quisque non tellus.
-          Convallis convallis tellus id interdum velit laoreet id donec ultrices.
-          Odio morbi quis commodo odio aenean sed adipiscing. Amet nisl suscipit
-          adipiscing bibendum est ultricies integer quis. Cursus euismod quis viverra
-          nibh cras. Metus vulputate eu scelerisque felis imperdiet proin fermentum
-          leo. Mauris commodo quis imperdiet massa tincidunt. Cras tincidunt lobortis
-          feugiat vivamus at augue. At augue eget arcu dictum varius duis at
-          consectetur lorem. Velit sed ullamcorper morbi tincidunt. Lorem donec massa
-          sapien faucibus et molestie ac.
-        </Typography>
-        <Typography paragraph>
-          Consequat mauris nunc congue nisi vitae suscipit. Fringilla est ullamcorper
-          eget nulla facilisi etiam dignissim diam. Pulvinar elementum integer enim
-          neque volutpat ac tincidunt. Ornare suspendisse sed nisi lacus sed viverra
-          tellus. Purus sit amet volutpat consequat mauris. Elementum eu facilisis
-          sed odio morbi. Euismod lacinia at quis risus sed vulputate odio. Morbi
-          tincidunt ornare massa eget egestas purus viverra accumsan in. In hendrerit
-          gravida rutrum quisque non tellus orci ac. Pellentesque nec nam aliquam sem
-          et tortor. Habitant morbi tristique senectus et. Adipiscing elit duis
-          tristique sollicitudin nibh sit. Ornare aenean euismod elementum nisi quis
-          eleifend. Commodo viverra maecenas accumsan lacus vel facilisis. Nulla
-          posuere sollicitudin aliquam ultrices sagittis orci a.
-        </Typography>
+        <Grid container spacing={2}>
+          <Grid item xs={8}>
+            <Item>
+            <CodeMirror 
+              value={code} height="80vh" 
+              extensions={[javascript({ jsx: true }), indentUnit.of("    ")]} onChange={onChange} />
+            </Item>
+          </Grid>
+          <Grid item xs={4}>
+            <Item>
+              <Stack spacing={2}>
+                <Item>
+                  <Paper>
+                    <Canvas width={"1000"} height={"500px"}/>
+                  </Paper>
+                </Item>
+                <Item>
+                <Typography paragraph>
+                  {error}
+                  </Typography>                
+                </Item>
+              </Stack>
+            </Item>
+          </Grid>
+        </Grid>
       </Main>
     </Box>
   );
